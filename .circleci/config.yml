@@ -31,17 +31,13 @@ jobs:
                 --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
                 --region us-east-1
                 
-  create_inventory_file:
-    docker:
-      - image: amazon/aws-cli
-    steps:
       - run: create inventory file 
         command: |
              aws ec2 describe-instances --region=us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values=MystackServer" --output text >> inventory.txt
       - persist_to_workspace:
           root: ~/
           paths: 
-            - inventory.txt  
+            - inventory.txt 
                 
   # Exercise: Config and Deployment
   configure_infrastructure: 
@@ -71,9 +67,6 @@ workflows:
     jobs:
       - say-hello
       - create_infrastructure
-      - create_inventory_file:
-          requires:
-            - create_infrastructure
       - configure_infrastructure:
           requires:
-            - create_inventory_file
+            - create_infrastructure
