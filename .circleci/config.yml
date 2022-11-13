@@ -31,11 +31,23 @@ jobs:
                 --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
                 --region us-east-1
                 
+      - run:    
+          name: create Inventory file 
+          command: |
+              aws ec2 describe-instances --region=us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values=MystackServer" --output text >> inventory.text 
+      - persist_to_workspace:
+          root: ~/
+          paths: 
+            - inventory.text
+                
   # Exercise: Config and Deployment
   configure_infrastructure: 
     docker:
       - image: cimg/python:3.11.0
     steps:
+      - attach_workspace:
+          at: ~/
+      - run: cat ~/inventory.text 
       - checkout
       - add_ssh_keys:
           fingerprints: ["36:54:ae:d7:99:3d:d6:ee:85:bf:8c:24:d3:44:e9:3b"] # You can get this ID in the section where you registered the SSH Key
