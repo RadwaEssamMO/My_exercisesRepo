@@ -34,7 +34,7 @@ jobs:
   # Exercise: Config and Deployment
   configure_infrastructure: 
     docker:
-      - image: python:3.7-alpine3.11
+      - image: cimg/python:3.11.0
     steps:
       - checkout
       - add_ssh_keys:
@@ -43,7 +43,7 @@ jobs:
           name: Install dependencies
           command: |
             # install the dependencies needed for your playbook
-            apk add --update ansible 
+            python3 -m pip install --user ansible 
       - run:
           name: Configure server
           command: |
