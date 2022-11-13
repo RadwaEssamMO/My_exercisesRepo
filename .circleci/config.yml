@@ -33,11 +33,11 @@ jobs:
                 
   create_inventory_file:
     docker:
-      - image: circleci/node:13.8.0
+      - image: amazon/aws-cli
     steps:
       - run: create inventory file 
         command: |
-             aws ec2 describe-instances --region=us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values=MystackServer" --output text >> inventory
+             aws ec2 describe-instances --region=us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values=MystackServer" --output text >> inventory.txt
       - persist_to_workspace:
           root: ~/
           paths: 
