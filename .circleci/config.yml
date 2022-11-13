@@ -34,21 +34,21 @@ jobs:
       - run:    
           name: create Inventory file 
           command: |
-              aws ec2 describe-instances --region=us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values=MystackServer" --output text >> inventory.text 
+              aws ec2 describe-instances --region=us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values=MystackServer" --output text >> inventory 
       - persist_to_workspace:
           root: ~/
           paths: 
-            - inventory.text
+            - inventory
                 
   # Exercise: Config and Deployment
   configure_infrastructure: 
     docker:
       - image: cimg/python:3.11.0
     steps:
+      - checkout
       - attach_workspace:
           at: ~/
-      - run: cat ~/inventory.text 
-      - checkout
+      - run: cat ~/inventory
       - add_ssh_keys:
           fingerprints: ["36:54:ae:d7:99:3d:d6:ee:85:bf:8c:24:d3:44:e9:3b"] # You can get this ID in the section where you registered the SSH Key
       - run:
@@ -59,7 +59,7 @@ jobs:
       - run:
           name: Configure server
           command: |
-            ansible-playbook -i inventory.txt main4.yml
+            ansible-playbook -i inventory main4.yml
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
